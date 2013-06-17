@@ -1,8 +1,6 @@
 package gate
 
-import (
-	"testing"
-)
+import "testing"
 
 func TestAnd(t *testing.T) {
 	inputs := [][]bool{
@@ -18,8 +16,8 @@ func TestAnd(t *testing.T) {
 		and.In1(x)
 		and.In2(y)
 
-		if and.Val() != out {
-			t.Errorf("Set %v inputs %v, %v expected %v got %v", i+1, x, y, out, and.Val())
+		if and.Output() != out {
+			t.Errorf("Set %v inputs %v, %v expected %v got %v", i+1, x, y, out, and.Output())
 		}
 	}
 }
@@ -38,8 +36,8 @@ func TestOr(t *testing.T) {
 		or.In1(x)
 		or.In2(y)
 
-		if or.Val() != out {
-			t.Errorf("Set %v inputs %v, %v expected %v got %v", i+1, x, y, out, or.Val())
+		if or.Output() != out {
+			t.Errorf("Set %v inputs %v, %v expected %v got %v", i+1, x, y, out, or.Output())
 		}
 	}
 }
@@ -55,8 +53,8 @@ func TestNot(t *testing.T) {
 		x, out := set[0], set[1]
 		not.In1(x)
 
-		if not.Val() != out {
-			t.Errorf("Set %v input %v expected %v got %v", i+1, x, out, not.Val())
+		if not.Output() != out {
+			t.Errorf("Set %v input %v expected %v got %v", i+1, x, out, not.Output())
 		}
 	}
 }
@@ -73,21 +71,21 @@ func TestMulti(t *testing.T) {
 
 	n1.In1(true)
 
-	if !n2.Val() {
+	if !n2.Output() {
 		t.Errorf("Expected %v, got %v", true, false)
-	} else if !n3.Val() {
+	} else if !n3.Output() {
 		t.Errorf("Expected %v, got %v", true, false)
-	} else if !n4.Val() {
+	} else if !n4.Output() {
 		t.Errorf("Expected %v, got %v", true, false)
 	}
 
 	n1.In1(false)
 
-	if n2.Val() {
+	if n2.Output() {
 		t.Errorf("Expected %v, got %v", false, true)
-	} else if n3.Val() {
+	} else if n3.Output() {
 		t.Errorf("Expected %v, got %v", false, true)
-	} else if n4.Val() {
+	} else if n4.Output() {
 		t.Errorf("Expected %v, got %v", false, true)
 	}
 }
@@ -117,8 +115,8 @@ func TestChain(t *testing.T) {
 		and.In2(y)
 		not.In1(z)
 
-		if or.Val() != out {
-			t.Errorf("Set %v inputs %v, %v, %v expected %v got %v", i+1, x, y, z, out, or.Val())
+		if or.Output() != out {
+			t.Errorf("Set %v inputs %v, %v, %v expected %v got %v", i+1, x, y, z, out, or.Output())
 		}
 	}
 }

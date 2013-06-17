@@ -12,7 +12,7 @@ func TestAnd(t *testing.T) {
 		{true, true, true},
 	}
 
-	and := new(And)
+	and := And()
 	for i, set := range inputs {
 		x, y, out := set[0], set[1], set[2]
 		and.In1(x)
@@ -32,7 +32,7 @@ func TestOr(t *testing.T) {
 		{true, true, true},
 	}
 
-	or := new(Or)
+	or := Or()
 	for i, set := range inputs {
 		x, y, out := set[0], set[1], set[2]
 		or.In1(x)
@@ -50,10 +50,10 @@ func TestNot(t *testing.T) {
 		{true, false},
 	}
 
-	not := new(Not)
+	not := Not()
 	for i, set := range inputs {
 		x, out := set[0], set[1]
-		not.In(x)
+		not.In1(x)
 
 		if not.Val() != out {
 			t.Errorf("Set %v input %v expected %v got %v", i+1, x, out, not.Val())
@@ -62,16 +62,16 @@ func TestNot(t *testing.T) {
 }
 
 func TestMulti(t *testing.T) {
-	n1 := new(Not)
-	n2 := new(Not)
-	n3 := new(Not)
-	n4 := new(Not)
+	n1 := Not()
+	n2 := Not()
+	n3 := Not()
+	n4 := Not()
 
-	n1.Out(n2.In)
-	n1.Out(n3.In)
-	n1.Out(n4.In)
+	n1.Out(n2.In1)
+	n1.Out(n3.In1)
+	n1.Out(n4.In1)
 
-	n1.In(true)
+	n1.In1(true)
 
 	if !n2.Val() {
 		t.Errorf("Expected %v, got %v", true, false)
@@ -81,7 +81,7 @@ func TestMulti(t *testing.T) {
 		t.Errorf("Expected %v, got %v", true, false)
 	}
 
-	n1.In(false)
+	n1.In1(false)
 
 	if n2.Val() {
 		t.Errorf("Expected %v, got %v", false, true)
@@ -93,9 +93,9 @@ func TestMulti(t *testing.T) {
 }
 
 func TestChain(t *testing.T) {
-	and := new(And)
-	or := new(Or)
-	not := new(Not)
+	and := And()
+	or := Or()
+	not := Not()
 
 	and.Out(or.In1)
 	not.Out(or.In2)
@@ -115,7 +115,7 @@ func TestChain(t *testing.T) {
 		x, y, z, out := set[0], set[1], set[2], set[3]
 		and.In1(x)
 		and.In2(y)
-		not.In(z)
+		not.In1(z)
 
 		if or.Val() != out {
 			t.Errorf("Set %v inputs %v, %v, %v expected %v got %v", i+1, x, y, z, out, or.Val())

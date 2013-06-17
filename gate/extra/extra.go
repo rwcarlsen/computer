@@ -16,7 +16,7 @@ func xorMap(vals []bool, gs []*gate.Gate) {
 }
 
 // Xor takes 2 inputs and produces 1 output.
-func Xor() *gate.Chip {
+func Xor() gate.Chip {
 	and1 := gate.And()
 	and2 := gate.And()
 	not := gate.Not()
@@ -26,7 +26,7 @@ func Xor() *gate.Chip {
 	not.Out(and2.In1)
 	or.Out(and2.In2)
 
-	return gate.NewChip(xorMap, 1, and2, and1, not, or)
+	return gate.NewChip(xorMap, 2, 1, and2, and1, not, or)
 }
 
 func muxMap(vals []bool, gs []*gate.Gate) {
@@ -43,7 +43,7 @@ func muxMap(vals []bool, gs []*gate.Gate) {
 
 // Mux takes 3 inputs a, b, and sel (in that order) and produces 1 output. a is
 // selected when sel=false. b is selected when sel=true.
-func Mux() *gate.Chip {
+func Mux() gate.Chip {
 	and1 := gate.And()
 	and2 := gate.And()
 	or := gate.Or()
@@ -53,7 +53,7 @@ func Mux() *gate.Chip {
 	and1.Out(or.In1)
 	and2.Out(or.In2)
 
-	return gate.NewChip(muxMap, 1, or, and1, and2, not)
+	return gate.NewChip(muxMap, 3, 1, or, and1, and2, not)
 }
 
 func demuxMap(vals []bool, gs []*gate.Gate) {
@@ -70,14 +70,14 @@ func demuxMap(vals []bool, gs []*gate.Gate) {
 
 // Demux takes 2 inputs x, sel (in that order) and produces 2 outputs a, b. a
 // is selected if sel=false. b is selected if sel=true
-func Dmux() *gate.Chip {
+func Dmux() gate.Chip {
 	and1 := gate.And()
 	and2 := gate.And()
 	not := gate.Not()
 
 	not.Out(and1.In2)
 
-	return gate.NewChip(demuxMap, 2, and1, and2, not)
+	return gate.NewChip(demuxMap, 2, 2, and1, and2, not)
 }
 
 func arrayMap(vals []bool, gs []*gate.Gate) {
@@ -94,35 +94,34 @@ func arrayNotMap(vals []bool, gs []*gate.Gate) {
 }
 
 // And16 takes 32 inputs (a, b; a, b; a, b...) and produces 16 outputs.
-func And16() *gate.Chip {
+func And16() gate.Chip {
 	gates := make([]*gate.Gate, 16)
 	for i := range gates {
 		gates[i] = gate.And()
 	}
-	return gate.NewChip(arrayMap, 16, gates...)
+	return gate.NewChip(arrayMap, 32, 16, gates...)
 }
 
 // Or16 takes 32 inputs (a, b; a, b; a, b...) and produces 16 outputs.
-func Or16() *gate.Chip {
+func Or16() gate.Chip {
 	gates := make([]*gate.Gate, 16)
 	for i := range gates {
 		gates[i] = gate.Or()
 	}
-	return gate.NewChip(arrayMap, 16, gates...)
+	return gate.NewChip(arrayMap, 32, 16, gates...)
 }
 
 // Not16 takes 16 inputs and produces 16 outputs.
-func Not16() *gate.Chip {
+func Not16() gate.Chip {
 	gates := make([]*gate.Gate, 16)
 	for i := range gates {
 		gates[i] = gate.Not()
 	}
-	return gate.NewChip(arrayNotMap, 16, gates...)
+	return gate.NewChip(arrayNotMap, 16, 16, gates...)
 }
 
 // Mux16 takes 33 inputs (a1, a2, a3...; b1, b2, b3..., sel) and produces 16
 // outputs.
-func Mux16() *gate.Chip {
+func Mux16() gate.Chip {
 	return nil
 }
-

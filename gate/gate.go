@@ -47,26 +47,36 @@ func Not() *Gate {
 	return &Gate{fn: func(x, y bool) bool { return !x }}
 }
 
-type Chip struct {
-	mapFn    func([]bool, []*Gate)
-	gateSet  []*Gate
-	nOuts int
-	outs     [][]Conn
+type Chip interface {
+	In(...bool)
+	InPin(int) Conn
+	Out(int, ...Conn)
+	Output() []bool
+}
+
+type chip struct {
+	mapFn   func([]bool, []*Gate)
+	gateSet []*Gate
+	nOuts   int
+	outs    [][]Conn
+	ins     []bool
 }
 
 // NewChip creates a new compositie chip composed of one or more connected
 // gates. The output gates for the chip must be first and in desired order.
 // nOuts must be less than or equal to the number of gates.
-func NewChip(mapFn func([]bool, []*Gate), nOuts int, gates ...*Gate) *Chip {
-	return &Chip{
-		mapFn: mapFn,
+func NewChip(mapFn func([]bool, []*Gate), nIns, nOuts int, gates ...*Gate) Chip {
+	return &chip{
+		mapFn:   mapFn,
 		gateSet: gates,
-		nOuts: nOuts,
-		outs: make([][]Conn, nOuts),
+		nOuts:   nOuts,
+		outs:    make([][]Conn, nOuts),
+		ins:     make([]bool, nIns),
 	}
 }
 
-func (c *Chip) In(vals ...bool) {
+func (c *chip) In(vals ...bool) {
+	c.ins = vals
 	c.mapFn(vals, c.gateSet)
 	for i, outs := range c.outs {
 		for _, out := range outs {
@@ -75,11 +85,18 @@ func (c *Chip) In(vals ...bool) {
 	}
 }
 
-func (c *Chip) Out(i int, cs ...Conn) {
+func (c *chip) InPin(i int) Conn {
+	return func(v bool) {
+		c.ins[i] = v
+		c.In(c.ins...)
+	}
+}
+
+func (c *chip) Out(i int, cs ...Conn) {
 	c.outs[i] = append(c.outs[i], cs...)
 }
 
-func (c *Chip) Output() []bool {
+func (c *chip) Output() []bool {
 	vals := make([]bool, c.nOuts)
 	for i := range vals {
 		vals[i] = c.gateSet[i].Output()

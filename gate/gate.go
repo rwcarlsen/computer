@@ -9,6 +9,10 @@ type Gate struct {
 	fn   func(bool, bool) bool
 }
 
+func New(fn func(x, y bool) bool) *Gate {
+	return &Gate{fn: fn}
+}
+
 func (d *Gate) In1(v bool) {
 	d.in1 = v
 	for _, out := range d.outs {
